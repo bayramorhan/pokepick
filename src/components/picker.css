@@ -1,0 +1,42 @@
+.motion-demo {
+  offset-path: path(
+    "M653.793,219.054s103.986-1.123,114.384,79.758S653.793,508.88,653.793,508.88"
+  );
+  animation: move 1500ms ease;
+}
+
+.run {
+  animation: run 500ms ease-in-out;
+  filter: invert(55%) sepia(58%) saturate(5474%) hue-rotate(164deg)
+    brightness(97%) contrast(106%);
+}
+
+@keyframes run {
+  0% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-16px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes move {
+  0% {
+    offset-distance: 80%;
+    transform: scale(1) rotate(20deg);
+  }
+
+  60% {
+    offset-distance: 0%;
+    transform: scale(0.5) rotate(360deg);
+  }
+
+  100% {
+    offset-distance: 20%;
+    transform: scale(0.75) rotate(180deg);
+  }
+}

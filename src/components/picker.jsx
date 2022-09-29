@@ -4,6 +4,8 @@ import {
   ChevronRightIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/outline";
+import "./picker.css";
+import PokeBall from "../assets/pokeball.png";
 
 const baseURL = "https://pokeapi.co/api/v2/";
 
@@ -12,6 +14,12 @@ const Picker = () => {
   const [selectedPokemon, setSelectedPokemon] = useState();
   const [total, setTotal] = useState(0);
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [throwing, setThrowing] = useState(false);
+  const [isCatched, setIsCatched] = useState(false);
+
+  useEffect(() => {
+    setIsCatched(false);
+  }, [selectedPokemon]);
 
   const getPokemonDetails = async (url) => {
     await axios.get(url).then((response) => {
@@ -65,6 +73,14 @@ const Picker = () => {
       : "-";
   };
 
+  const pokeBallClickHandler = () => {
+    setThrowing(true);
+    setTimeout(() => {
+      setThrowing(false);
+      setIsCatched(Math.random() < 0.5);
+    }, 1500);
+  };
+
   useEffect(() => {
     axios.get(baseURL + "pokemon?limit=1154").then((response) => {
       setTotal(response.data.count);
@@ -113,7 +129,7 @@ const Picker = () => {
         </button>
       </div>
       {selectedPokemon && (
-        <div className="grid grid-cols-12 border divide-x">
+        <div className="grid grid-cols-12 border divide-x h-[500px]">
           <div className="col-span-12">
             <h2 className="capitalize font-semibold text-lg bg-indigo-50 p-4">
               {selectedPokemon.name}
@@ -121,10 +137,27 @@ const Picker = () => {
           </div>
           <div className="col-span-12 md:col-span-4">
             <div className="space-y-10">
-              <div className="pt-6 px-6 pb-16">
+              <div className="pt-4 px-6 relative">
+                {Math.random() < 0.5 &&
+                selectedPokemon.moves.length > 0 &&
+                throwing ? (
+                  <span className="absolute capitalize truncate bg-black px-4 py-2 bg-opacity-60 text-gray-100 text-sm font-medium top-full mt-4 left-1/2 transform -translate-x-1/2">
+                    {selectedPokemon.name} used{" "}
+                    {
+                      selectedPokemon.moves[
+                        Math.floor(Math.random() * selectedPokemon.moves.length)
+                      ].move.name
+                    }{" "}
+                    attack!
+                  </span>
+                ) : (
+                  ""
+                )}
                 {selectedPokemon?.sprites?.other.dream_world?.front_default && (
                   <img
-                    className="h-56 w-56 object-contain mx-auto"
+                    className={`h-44 w-44 object-contain mx-auto ${
+                      throwing && Math.random() < 0.5 ? `run` : ""
+                    }`}
                     src={
                       selectedPokemon.sprites.other.dream_world.front_default
                     }
@@ -133,10 +166,28 @@ const Picker = () => {
                 )}
                 {!selectedPokemon?.sprites?.other.dream_world
                   ?.front_default && (
-                  <div className="h-44 w-44 border rounded flex items-center justify-center p-4 text-center">
+                  <div className="h-64 w-full border rounded flex items-center justify-center p-4 text-center">
                     <p>No image found for this pokémon</p>
                   </div>
                 )}
+                {!isCatched && (
+                  <img
+                    src={PokeBall}
+                    alt="Pokéball"
+                    className={`w-14 mt-6 mx-auto cursor-pointer hover:scale-110 transition-all duration-200 ${
+                      throwing &&
+                      "absolute -top-[140px] right-[800px] motion-demo"
+                    }`}
+                    onClick={pokeBallClickHandler}
+                  />
+                )}
+                {
+                  <h2 className={`font-semibold text-center pt-4`}>
+                    {isCatched
+                      ? `You catched ${selectedPokemon.name}!`
+                      : !throwing && "Try to catch!"}
+                  </h2>
+                }
               </div>
             </div>
           </div>
