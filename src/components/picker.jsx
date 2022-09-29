@@ -52,6 +52,19 @@ const Picker = () => {
     ));
   };
 
+  const heldItems = () => {
+    return selectedPokemon.held_items.length > 0
+      ? selectedPokemon.held_items.map((heldItem, key) => (
+          <span
+            key={key}
+            className="px-2 py-1 bg-gray-100 rounded text-sm capitalize text-center"
+          >
+            {heldItem.item.name.replace("-", " ")}
+          </span>
+        ))
+      : "-";
+  };
+
   useEffect(() => {
     axios.get(baseURL + "pokemon?limit=1154").then((response) => {
       setTotal(response.data.count);
@@ -91,9 +104,9 @@ const Picker = () => {
 
         <button
           className={`bg-indigo-50 rounded-full p-2 border border-indigo-200 text-indigo-600 ${
-            currentIdx < total - 1 && "opacity-50 cursor-not-allowed"
+            currentIdx === total - 1 && "opacity-50 cursor-not-allowed"
           }`}
-          disabled={currentIdx < total - 1}
+          disabled={currentIdx === total - 1}
           onClick={getLastPokemon}
         >
           <ChevronDoubleRightIcon className="w-4" />
@@ -106,7 +119,7 @@ const Picker = () => {
               {selectedPokemon.name}
             </h2>
           </div>
-          <div className="col-span-4">
+          <div className="col-span-12 md:col-span-4">
             <div className="space-y-10">
               <div className="pt-6 px-6 pb-16">
                 {selectedPokemon?.sprites?.other.dream_world?.front_default && (
@@ -127,8 +140,8 @@ const Picker = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-8">
-            <div className="p-6 grid grid-cols-2 gap-8">
+          <div className="col-span-12 md:col-span-8">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <table className="w-full">
                   <tbody>
@@ -148,8 +161,11 @@ const Picker = () => {
                       <td className="font-medium py-2 w-44">Types</td>
                       <td>
                         <div className="flex space-x-2 items-center">
-                          {selectedPokemon.types.map((type) => (
-                            <span className="px-2 py-1 bg-gray-100 rounded text-sm capitalize">
+                          {selectedPokemon.types.map((type, key) => (
+                            <span
+                              key={key}
+                              className="px-2 py-1 bg-gray-100 rounded text-sm capitalize"
+                            >
                               {type.type.name}
                             </span>
                           ))}
@@ -160,13 +176,7 @@ const Picker = () => {
                       <td className="font-medium py-2 w-44">Held Items</td>
                       <td>
                         <div className="grid grid-cols-2 gap-2">
-                          {selectedPokemon.held_items.length > 0
-                            ? selectedPokemon.held_items.map((heldItem) => (
-                                <span className="px-2 py-1 bg-gray-100 rounded text-sm capitalize text-center">
-                                  {heldItem.item.name.replace("-", " ")}
-                                </span>
-                              ))
-                            : "-"}
+                          {heldItems()}
                         </div>
                       </td>
                     </tr>
